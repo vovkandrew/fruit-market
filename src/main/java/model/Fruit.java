@@ -4,17 +4,6 @@ import java.time.LocalDate;
 
 public class Fruit {
     private FruitType fruitType;
-
-    enum FruitType {
-        APPLE,
-        BANANA,
-        MANGO,
-        KIWI,
-        PINEAPPLE,
-        CHERRY,
-        STRAWBERRY
-    }
-
     private int expirationPeriod;
     private LocalDate supplyDate; //yyyy-MM-dd
     private double price;

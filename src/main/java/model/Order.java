@@ -2,24 +2,13 @@ package model;
 
 public class Order {
     private String name;
-    private Fruit.FruitType fruitType;
-
-    enum FruitType {
-        APPLE,
-        BANANA,
-        MANGO,
-        KIWI,
-        PINEAPPLE,
-        CHERRY,
-        STRAWBERRY
-    }
-
+    private FruitType fruitType;
     private int fruitQuantity;
 
     public Order() {
     }
 
-    public Order(String name, Fruit.FruitType fruitType, int fruitQuantity) {
+    public Order(String name, FruitType fruitType, int fruitQuantity) {
         this.name = name;
         this.fruitType = fruitType;
         this.fruitQuantity = fruitQuantity;
@@ -33,11 +22,11 @@ public class Order {
         this.name = name;
     }
 
-    public Fruit.FruitType getFruitType() {
+    public FruitType getFruitType() {
         return fruitType;
     }
 
-    public void setFruitType(Fruit.FruitType fruitType) {
+    public void setFruitType(FruitType fruitType) {
         this.fruitType = fruitType;
     }
 

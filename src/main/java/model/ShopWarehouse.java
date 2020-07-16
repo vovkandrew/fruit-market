@@ -1,6 +1,5 @@
 package model;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -27,18 +26,13 @@ public class ShopWarehouse {
         return moneyBalance;
     }
 
-    public void addFruit(String jsonPath) {
+    public void addFruit(String jsonPath) throws Exception {
         JSONParser parser = new JSONParser();
         try (FileReader reader = new FileReader(jsonPath)) {
-            Object object = parser.parse(reader);
-            JSONArray jsonArray = (JSONArray) object;
+            JSONArray jsonArray = (JSONArray) parser.parse(reader);
             jsonArray.forEach(o -> parseAndAddFruit((JSONObject) o));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
+        } catch (IOException | ParseException e) {
+            throw new IOException("Can't open the file and complete parsing");
         }
 
     }
@@ -46,7 +40,7 @@ public class ShopWarehouse {
     private void parseAndAddFruit(JSONObject object) {
         Fruit fruit = new Fruit();
         JSONObject jsonObject = (JSONObject) object.get("fruit");
-        fruit.setFruitType((Fruit.FruitType.valueOf((String) jsonObject.get("fruitType"))));
+        fruit.setFruitType((FruitType.valueOf((String) jsonObject.get("fruitType"))));
         fruit.setExpirationPeriod(Integer.parseInt((String) jsonObject.get("expirationPeriod")));
         fruit.setSupplyDate(LocalDate.parse((CharSequence) jsonObject.get("supplyDate")));
         fruit.setPrice(Double.parseDouble((String) jsonObject.get("price")));
@@ -62,7 +56,7 @@ public class ShopWarehouse {
         }
     }
 
-    public void load(String jsonPath) {
+    public void load(String jsonPath) throws Exception {
         fruitList.clear();
         addFruit(jsonPath);
     }
@@ -77,7 +71,7 @@ public class ShopWarehouse {
         return fruitList.stream()
                 .filter(fruit -> willExpireBeforeDate(fruit, date))
                 .filter(fruit -> fruit.getFruitType().equals(
-                        Fruit.FruitType.valueOf(fruitType)))
+                        FruitType.valueOf(fruitType)))
                 .collect(Collectors.toList());
     }
 
@@ -101,7 +95,7 @@ public class ShopWarehouse {
         return fruitList.stream()
                 .filter(fruit -> !willExpireBeforeDate(fruit, date))
                 .filter(fruit -> fruit.getFruitType().equals(
-                        Fruit.FruitType.valueOf(fruitType)))
+                        FruitType.valueOf(fruitType)))
                 .collect(Collectors.toList());
     }
 
@@ -117,29 +111,23 @@ public class ShopWarehouse {
         return fruitList.stream()
                 .filter(fruit -> fruit.getSupplyDate().equals(localDate))
                 .filter(fruit -> fruit.getFruitType().equals(
-                        Fruit.FruitType.valueOf(fruitType)))
+                        FruitType.valueOf(fruitType)))
                 .collect(Collectors.toList());
     }
 
-    public void sell(String jsonPath) {
+    public void sell(String jsonPath) throws IOException {
         JSONParser parser = new JSONParser();
         try (FileReader reader = new FileReader(jsonPath)) {
             Object object = parser.parse(reader);
             JSONArray jsonArray = (JSONArray) object;
-            List<Order> orderList =
-                    (List<Order>) jsonArray
-                            .stream()
+            List<Order> orderList = (List<Order>) jsonArray.stream()
                             .map(o -> parseToOrder((JSONObject) o))
                             .collect(Collectors.toList());
             for (Order o: orderList) {
                 checkWarehouse(o);
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
+        } catch (IOException | ParseException e) {
+            throw new IOException("Can't open the file and complete parsing");
         }
     }
 
@@ -147,21 +135,18 @@ public class ShopWarehouse {
         Order order = new Order();
         JSONObject jsonObject = (JSONObject) object.get("client");
         order.setName((String) jsonObject.get("name"));
-        order.setFruitType((Fruit.FruitType.valueOf((String) jsonObject.get("type"))));
+        order.setFruitType((FruitType.valueOf((String) jsonObject.get("type"))));
         order.setFruitQuantity(Integer.parseInt((String) jsonObject.get("count")));
         return order;
     }
 
     private void checkWarehouse(Order order) {
-        int availableFruits =
-                (int) fruitList
-                        .stream()
+        int availableFruits = (int) fruitList.stream()
                         .filter(fruit -> fruit.getFruitType().equals(order.getFruitType()))
                         .count();
         if (availableFruits > order.getFruitQuantity()) {
             for (int i = order.getFruitQuantity(); i > 0; i--) {
-                Fruit fruit = fruitList
-                        .stream()
+                Fruit fruit = fruitList.stream()
                         .filter(fr -> fr.getFruitType().equals(order.getFruitType()))
                         .findFirst()
                         .get();

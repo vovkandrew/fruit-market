@@ -3,7 +3,7 @@ import java.util.Date;
 import model.ShopWarehouse;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         String path = "src/main/java/order/order1.json";
         ShopWarehouse warehouse = new ShopWarehouse();
         warehouse.addFruit(path);
@@ -14,9 +14,6 @@ public class Main {
         String path3 = "src/main/java/order/orders_list.json";
         warehouse.save(path3);
         System.out.println(ShopWarehouse.getFruitList());
-        /*String path4 = "src/main/java/order/order3.json";
-        warehouse.load(path4);
-        System.out.println(ShopWarehouse.getFruitList());*/
         Instant instant = Instant.now();
         Date date = Date.from(instant);
         System.out.println(warehouse.getSpoiledFruits(date));
