@@ -14,6 +14,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import static model.Parser.parseAndAddFruit;
+import static model.Parser.parseToOrder;
+
 public class ShopWarehouse {
     private static final List<Fruit> fruitList = new ArrayList<>();
     private static double moneyBalance = 0;
@@ -26,25 +29,15 @@ public class ShopWarehouse {
         return moneyBalance;
     }
 
-    public void addFruit(String jsonPath) throws Exception {
+    public void addFruit(String jsonPath) {
         JSONParser parser = new JSONParser();
         try (FileReader reader = new FileReader(jsonPath)) {
             JSONArray jsonArray = (JSONArray) parser.parse(reader);
-            jsonArray.forEach(o -> parseAndAddFruit((JSONObject) o));
+            jsonArray.forEach(o -> parseAndAddFruit((JSONObject) o, fruitList));
         } catch (IOException | ParseException e) {
-            throw new IOException("Can't open the file and complete parsing");
+            throw new RuntimeException("Can't open the file and complete parsing", e);
         }
 
-    }
-
-    private void parseAndAddFruit(JSONObject object) {
-        Fruit fruit = new Fruit();
-        JSONObject jsonObject = (JSONObject) object.get("fruit");
-        fruit.setFruitType((FruitType.valueOf((String) jsonObject.get("fruitType"))));
-        fruit.setExpirationPeriod(Integer.parseInt((String) jsonObject.get("expirationPeriod")));
-        fruit.setSupplyDate(LocalDate.parse((CharSequence) jsonObject.get("supplyDate")));
-        fruit.setPrice(Double.parseDouble((String) jsonObject.get("price")));
-        fruitList.add(fruit);
     }
 
     public void save(String jsonPath) {
@@ -52,11 +45,11 @@ public class ShopWarehouse {
             file.write(fruitList.toString());
             file.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Can't save data from the list of fruits", e);
         }
     }
 
-    public void load(String jsonPath) throws Exception {
+    public void load(String jsonPath) {
         fruitList.clear();
         addFruit(jsonPath);
     }
@@ -115,7 +108,7 @@ public class ShopWarehouse {
                 .collect(Collectors.toList());
     }
 
-    public void sell(String jsonPath) throws IOException {
+    public void sell(String jsonPath) {
         JSONParser parser = new JSONParser();
         try (FileReader reader = new FileReader(jsonPath)) {
             Object object = parser.parse(reader);
@@ -127,17 +120,8 @@ public class ShopWarehouse {
                 checkWarehouse(o);
             }
         } catch (IOException | ParseException e) {
-            throw new IOException("Can't open the file and complete parsing");
+            throw new RuntimeException("Can't open the file and complete parsing");
         }
-    }
-
-    private Order parseToOrder(JSONObject object) {
-        Order order = new Order();
-        JSONObject jsonObject = (JSONObject) object.get("client");
-        order.setName((String) jsonObject.get("name"));
-        order.setFruitType((FruitType.valueOf((String) jsonObject.get("type"))));
-        order.setFruitQuantity(Integer.parseInt((String) jsonObject.get("count")));
-        return order;
     }
 
     private void checkWarehouse(Order order) {
