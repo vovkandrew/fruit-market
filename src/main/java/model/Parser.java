@@ -1,9 +1,8 @@
 package model;
 
-import org.json.simple.JSONObject;
-
-import java.util.List;
 import java.time.LocalDate;
+import java.util.List;
+import org.json.simple.JSONObject;
 
 public class Parser {
     public static Order parseToOrder(JSONObject object) {

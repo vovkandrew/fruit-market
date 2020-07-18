@@ -14,9 +14,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import static model.Parser.parseAndAddFruit;
-import static model.Parser.parseToOrder;
-
 public class ShopWarehouse {
     private static final List<Fruit> fruitList = new ArrayList<>();
     private static double moneyBalance = 0;
@@ -33,7 +30,7 @@ public class ShopWarehouse {
         JSONParser parser = new JSONParser();
         try (FileReader reader = new FileReader(jsonPath)) {
             JSONArray jsonArray = (JSONArray) parser.parse(reader);
-            jsonArray.forEach(o -> parseAndAddFruit((JSONObject) o, fruitList));
+            jsonArray.forEach(o -> Parser.parseAndAddFruit((JSONObject) o, fruitList));
         } catch (IOException | ParseException e) {
             throw new RuntimeException("Can't open the file and complete parsing", e);
         }
@@ -114,7 +111,7 @@ public class ShopWarehouse {
             Object object = parser.parse(reader);
             JSONArray jsonArray = (JSONArray) object;
             List<Order> orderList = (List<Order>) jsonArray.stream()
-                            .map(o -> parseToOrder((JSONObject) o))
+                            .map(o -> Parser.parseToOrder((JSONObject) o))
                             .collect(Collectors.toList());
             for (Order o: orderList) {
                 checkWarehouse(o);
