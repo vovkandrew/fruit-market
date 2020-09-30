@@ -1,0 +1,4 @@
+[{"fruit":{"fruitType":"APPLE","expirationPeriod":"30","supplyDate":"2020-06-24", "price":"15.00"}},
+  {"fruit":{"fruitType":"APPLE","expirationPeriod":"30","supplyDate":"2020-06-24", "price":"15.00"}},
+  {"fruit":{"fruitType":"APPLE","expirationPeriod":"30","supplyDate":"2020-06-24", "price":"15.00"}},
+  {"fruit":{"fruitType":"BANANA","expirationPeriod":"14","supplyDate":"2020-06-24", "price":"30.00"}}]
